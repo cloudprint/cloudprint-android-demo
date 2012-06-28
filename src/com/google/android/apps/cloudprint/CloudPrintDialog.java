@@ -14,6 +14,7 @@ import android.webkit.WebViewClient;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
+/** Cloud Print dialog to select a printer to print to. */
 public class CloudPrintDialog extends Activity {
   private static final String PRINT_DIALOG_URL = "https://www.google.com/cloudprint/dialog.html";
   private static final String JS_INTERFACE = "AndroidPrintDialog";
@@ -31,48 +32,48 @@ public class CloudPrintDialog extends Activity {
   Intent cloudPrintIntent;
 
   final class PrintDialogJavaScriptInterface {
-	public String getType() {
-	  return "dataUrl";
-	}
+	  public String getType() {
+	    return "dataUrl";
+	  }
 
-	public String getTitle() {
-	  return cloudPrintIntent.getExtras().getString("title");
-	}
+	  public String getTitle() {
+	    return cloudPrintIntent.getExtras().getString("title");
+	  }
 
-	public String getContent() {
-	  try {
-	    ContentResolver contentResolver = getContentResolver();
-	    InputStream is = contentResolver.openInputStream(cloudPrintIntent.getData());
-	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	  public String getContent() {
+	    try {
+	      ContentResolver contentResolver = getContentResolver();
+	      InputStream is = contentResolver.openInputStream(cloudPrintIntent.getData());
+	      ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	        
-	    byte[] buffer = new byte[4096];
-	    int n = is.read(buffer);
-	    while (n >= 0) {
-	      baos.write(buffer, 0, n);
-	      n = is.read(buffer);
+	      byte[] buffer = new byte[4096];
+	      int n = is.read(buffer);
+	      while (n >= 0) {
+	        baos.write(buffer, 0, n);
+	        n = is.read(buffer);
+	      }
+	      is.close();
+	      baos.flush();
+	        
+	      String contentBase64 = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
+	      return "data:" + cloudPrintIntent.getType() + ";base64," + contentBase64;
+	    } catch (Exception e) {
+	      e.printStackTrace();
 	    }
-	    is.close();
-	    baos.flush();
-	        
-	    String contentBase64 = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
-	    return "data:" + cloudPrintIntent.getType() + ";base64," + contentBase64;
-	  } catch (Exception e) {
-	    e.printStackTrace();
+	    return "";
 	  }
-	  return "";
-	}
 
-	public void onPostMessage(String message) {
-	  if (message.startsWith(CLOSE_POST_MESSAGE_NAME)) {
-	    finish();
+	  public void onPostMessage(String message) {
+	    if (message.startsWith(CLOSE_POST_MESSAGE_NAME)) {
+	      finish();
+	    }
 	  }
-	}
   }
 
   @Override
   public void onCreate(Bundle icicle) {
     super.onCreate(icicle);
-    
+     
     setContentView(R.layout.print_dialog);
     dialogWebView = (WebView) findViewById(R.id.webview);
     cloudPrintIntent = this.getIntent();
