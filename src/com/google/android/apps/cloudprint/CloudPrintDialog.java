@@ -73,7 +73,7 @@ public class CloudPrintDialog extends Activity {
   @Override
   public void onCreate(Bundle icicle) {
     super.onCreate(icicle);
-     
+
     setContentView(R.layout.print_dialog);
     dialogWebView = (WebView) findViewById(R.id.webview);
     cloudPrintIntent = this.getIntent();
@@ -83,7 +83,7 @@ public class CloudPrintDialog extends Activity {
     
     dialogWebView.setWebViewClient(new PrintDialogWebClient());
     dialogWebView.addJavascriptInterface(
-      new PrintDialogJavaScriptInterface(), JS_INTERFACE);
+        new PrintDialogJavaScriptInterface(), JS_INTERFACE);
 
     dialogWebView.loadUrl(PRINT_DIALOG_URL);
   }
@@ -100,8 +100,8 @@ public class CloudPrintDialog extends Activity {
       if (PRINT_DIALOG_URL.equals(url)) {
         // Submit print document.
         view.loadUrl("javascript:printDialog.setPrintDocument(printDialog.createPrintDocument("
-          + "window." + JS_INTERFACE + ".getType(),window." + JS_INTERFACE + ".getTitle(),"
-          + "window." + JS_INTERFACE + ".getContent()))");
+            + "window." + JS_INTERFACE + ".getType(),window." + JS_INTERFACE + ".getTitle(),"
+            + "window." + JS_INTERFACE + ".getContent()))");
 
         // Add post messages listener.
         view.loadUrl("javascript:window.addEventListener('message',"
